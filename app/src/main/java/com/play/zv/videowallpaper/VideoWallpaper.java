@@ -21,12 +21,16 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
  */
 
 public class VideoWallpaper extends WallpaperService {
+    public  String vedioPath;
+    private MediaPlayer mMediaPlayer;
+
     @Override
     public Engine onCreateEngine() {
+        System.out.println("onCreateEngine"+vedioPath);
         return new VideoEngine();
     }
 
-    public static final String VIDEO_PARAMS_CONTROL_ACTION = "com.zhy.livewallpaper";
+    public static final String VIDEO_PARAMS_CONTROL_ACTION = "com.play.zv";
     public static final String KEY_ACTION = "action";
     public static final int ACTION_VOICE_SILENCE = 110;
     public static final int ACTION_VOICE_NORMAL = 111;
@@ -43,8 +47,11 @@ public class VideoWallpaper extends WallpaperService {
         context.sendBroadcast(intent);
     }
 
-    public static void setToWallPaper(Context context) {
-        final Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+    public void setToWallPaper(Context context,String path) {
+        System.out.println("先到这里初始化？");
+        vedioPath = path;
+        System.out.println("先到这里初始化！"+vedioPath);
+        Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
         intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
                 new ComponentName(context, VideoWallpaper.class));
         context.startActivity(intent);
@@ -53,14 +60,16 @@ public class VideoWallpaper extends WallpaperService {
 
     class VideoEngine extends Engine {
 
-        private MediaPlayer mMediaPlayer;
+
+
+
 
         private BroadcastReceiver mVideoParamsControlReceiver;
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
-            //L.d("VideoEngine#onCreate");
+
 
             IntentFilter intentFilter = new IntentFilter(VIDEO_PARAMS_CONTROL_ACTION);
             registerReceiver(mVideoParamsControlReceiver = new BroadcastReceiver() {
@@ -105,19 +114,24 @@ public class VideoWallpaper extends WallpaperService {
 
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
-            //L.d("VideoEngine#onSurfaceCreated ");
+            System.out.println("onSurfaceCreated");
             super.onSurfaceCreated(holder);
             mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setSurface(holder.getSurface());
+
             try {
-                AssetManager assetMg = getApplicationContext().getAssets();
-                AssetFileDescriptor fileDescriptor = assetMg.openFd("test1.mp4");
-                mMediaPlayer.setDataSource(fileDescriptor.getFileDescriptor(),
-                        fileDescriptor.getStartOffset(), fileDescriptor.getLength());
+//                AssetManager assetMg = getApplicationContext().getAssets();
+//                AssetFileDescriptor fileDescriptor = assetMg.openFd("test1.mp4");
+                //if (!vedioPath.isEmpty()) {
+                System.out.println("到这里了" + vedioPath);
+                mMediaPlayer.setDataSource("/storage/emulated/0/DCIM/Camera/VID_20170521_150414.mp4");
+                //System.out.println(vedioPath);
                 mMediaPlayer.setLooping(true);
                 mMediaPlayer.setVolume(0, 0);
                 mMediaPlayer.prepare();
+                //mMediaPlayer.prepareAsync();
                 mMediaPlayer.start();
+                mMediaPlayer.setSurface(holder.getSurface());
+                //}
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -8,7 +8,10 @@
 
     tools:context="com.play.zv.videowallpaper.MainActivity"
     android:orientation="vertical">
-
+    <EditText
+        android:id="@+id/set_video_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <Button
         android:id="@+id/set_wall_pager"
         android:text="设置动态壁纸"
